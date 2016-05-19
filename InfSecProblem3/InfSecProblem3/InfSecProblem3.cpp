@@ -106,7 +106,7 @@ public:
 		out << "(" << p.x << ", " << p.y << ")";
 		return out;
 	}
-	friend std::istream& operator >> (std::istream& in, EPoint& p)
+	friend std::istream& operator>>(std::istream& in, EPoint& p)
 	{
 		in >> p.x >> p.y;
 		return in;

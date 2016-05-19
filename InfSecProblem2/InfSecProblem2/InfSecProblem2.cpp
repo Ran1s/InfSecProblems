@@ -34,15 +34,21 @@ public:
 	friend FPolynom operator*(const FPolynom& lhs, const FPolynom& rhs)
 	{
 		int pos = find(lhs) + find(rhs) + 2;
-		pos %= static_cast<int>(std::pow(number, degree)) + 1;
-		pos--;
+		pos %= static_cast<int>(std::pow(number, degree));
+		if (pos > 0)
+		{
+			pos--;
+		}
 		return alpha[pos];
 	}
-	friend FPolynom pow(const FPolynom& polynom, int pow)
+	static FPolynom pow(const FPolynom& polynom, int pow)
 	{
-		int pos = find(polynom) + 1;
-		pos %= static_cast<int>(std::pow(number, degree)) + 1;
-		pos--;
+		int pos = (find(polynom) + 1) * pow;
+		pos %= static_cast<int>(std::pow(number, degree));
+		if (pos > 0)
+		{
+			pos--;
+		}		
 		return alpha[pos];
 	}
 	friend bool operator==(const FPolynom& lhs, const FPolynom& rhs)
@@ -219,12 +225,6 @@ bool FPolynom::calculated = false;
 
 int main()
 {
-	FNumber::module = 2;
-	FPolynom::degree = 5;
-	FPolynom::number = 2;
-	FPolynom::what_change = 1;
-	FPolynom::to_change = { 1, 0, 1 };
-
 	std::cout << "module, degree ";
 	std::cin >> FPolynom::number >> FPolynom::degree;
 	FNumber::module = FPolynom::number;
@@ -239,7 +239,7 @@ int main()
 	{
 		tochv[i] = toch[i] - '0';
 	}
-
+	FPolynom::to_change = tochv;
 
 	FPolynom a, b, c, d;
 	std::cout << "first problem: first polynom, second polynom ";
@@ -249,7 +249,7 @@ int main()
 	std::cout << "second problem: polynom, degree ";
 	int p;
 	std::cin >> c >> p;
-	std::cout << pow(c, p) << std::endl;
+	std::cout << FPolynom::pow(c, p) << std::endl;
 	std::cout << "third problem: polynom ";
 	std::cin >> d;
 	std::cout << "inverse polynom: " << FPolynom::inverse(d) << std::endl;
