@@ -33,22 +33,14 @@ public:
 	}
 	friend FPolynom operator*(const FPolynom& lhs, const FPolynom& rhs)
 	{
-		int pos = find(lhs) + find(rhs) + 2;
-		pos %= static_cast<int>(std::pow(number, degree));
-		if (pos > 0)
-		{
-			pos--;
-		}
+		int pos = find(lhs) + find(rhs);
+		pos %= static_cast<int>(std::pow(number, degree)) - 1;
 		return alpha[pos];
 	}
 	static FPolynom pow(const FPolynom& polynom, int pow)
 	{
-		int pos = (find(polynom) + 1) * pow;
-		pos %= static_cast<int>(std::pow(number, degree));
-		if (pos > 0)
-		{
-			pos--;
-		}		
+		int pos = (find(polynom)) * pow;
+		pos %= static_cast<int>(std::pow(number, degree)) - 1;
 		return alpha[pos];
 	}
 	friend bool operator==(const FPolynom& lhs, const FPolynom& rhs)
@@ -121,7 +113,7 @@ private:
 		int count_elements = std::pow(number, degree);
 		alpha.resize(count_elements);
 		//std::vector<FNumber> cur = gen;
-		alpha[0] = gen;
+		alpha[0] = { 1 };
 		for (int deg = 1; deg < count_elements; deg++)
 		{
 			alpha[deg] = mult(alpha[deg - 1], gen);
@@ -202,17 +194,14 @@ private:
 	}
 	static bool one(const std::vector<FNumber>& pol)
 	{
-		if (pol.size() < 2)
-			return false;
-		if (!(pol[0] == 0))
-			return false;
-
-		for (size_t i = 2; i < pol.size(); i++)
+		if (pol.size() == 1)
 		{
-			if (!(pol[i] == 0))
-				return false;
+			if (pol[0] == 1)
+			{
+				return true;
+			}
 		}
-		return true;
+		return false;
 	}
 	
 	std::vector<FNumber> polynom;
