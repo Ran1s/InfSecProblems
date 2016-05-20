@@ -74,7 +74,8 @@ public:
 	}
 	static FPolynom inverse(const FPolynom& polynom)
 	{
-		int pos = static_cast<int>(std::pow(number, degree)) - find(polynom) - 2;
+		int pos = static_cast<int>(std::pow(number, degree)) - 1;
+		pos -= find(polynom);
 		return alpha[pos];
 	}
 private:
