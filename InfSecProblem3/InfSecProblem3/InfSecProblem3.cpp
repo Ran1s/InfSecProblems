@@ -33,9 +33,13 @@ public:
 	}
 	friend EPoint operator+(const EPoint& lhs, const EPoint& rhs)
 	{
-		if (lhs == EPoint(0, 0) || rhs == EPoint(0, 0))
+		if (lhs == EPoint(0, 0))
 		{
-			return EPoint(0, 0);
+			return rhs;
+		}
+		if (rhs == EPoint(0, 0))
+		{
+			return lhs;
 		}
 		FNumber lambda;
 		if (lhs == rhs)
@@ -80,8 +84,7 @@ public:
 	{
 		if (k < 1)
 			throw std::invalid_argument("k can't be negative");
-		EPoint ans = p;
-		k--;
+		EPoint ans(0, 0);
 		while (k > 0)
 		{
 			if (k % 2 == 0)
@@ -138,7 +141,9 @@ int main()
 
 	std::cout << std::endl;
 	EPoint np = n * p;
+	std::cout << "nP = " << np << std::endl;
 	EPoint kq = k * q;
+	std::cout << "kQ = " << kq << std::endl;
 	std::cout << "nP + kQ = " << n * p + k * q << std::endl;
 	/*std::cout << 21 * EPoint(0, 30) << std::endl;*/
 
