@@ -29,10 +29,10 @@ FNumber operator-(const FNumber& lhs, const FNumber& rhs)
 }
 FNumber& FNumber::operator*=(const FNumber& rhs)
 {
-	//безопасная версия
+	//Р±РµР·РѕРїР°СЃРЅР°СЏ РІРµСЂСЃРёСЏ
 	*this = *this * rhs;
 
-	//оптимизированная версия
+	//РѕРїС‚РёРјРёР·РёСЂРѕРІР°РЅРЅР°СЏ РІРµСЂСЃРёСЏ
 	//val *= rhs.val;
 	//val %= module;
 	//val += module;
@@ -77,7 +77,7 @@ FNumber FNumber::pow(FNumber num, int p)
 
 FNumber FNumber::inverse(const FNumber& num)
 {
-	// возможно, стоит переделать через функцию Эйлера
+	// РІРѕР·РјРѕР¶РЅРѕ, СЃС‚РѕРёС‚ РїРµСЂРµРґРµР»Р°С‚СЊ С‡РµСЂРµР· С„СѓРЅРєС†РёСЋ Р­Р№Р»РµСЂР°
 	return FNumber::pow(num, FNumber::module - 2);
 }
 FNumber operator/(const FNumber&lhs, const FNumber& rhs)
@@ -86,7 +86,8 @@ FNumber operator/(const FNumber&lhs, const FNumber& rhs)
 }
 FNumber& FNumber::operator/=(const FNumber& rhs)
 {
-	return (*this) / rhs;
+	*this = *this / rhs;
+	return *this;
 }
 int FNumber::get_value() const
 {
@@ -105,7 +106,7 @@ std::ostream& operator<<(std::ostream& out, const FNumber& num)
 	out << num.val;
 	return out;
 }
-std::istream& operator>>(std::istream& in, FNumber& num)
+std::istream& operator >> (std::istream& in, FNumber& num)
 {
 	in >> num.val;
 	return in;

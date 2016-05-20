@@ -86,7 +86,8 @@ FNumber operator/(const FNumber&lhs, const FNumber& rhs)
 }
 FNumber& FNumber::operator/=(const FNumber& rhs)
 {
-	return (*this) / rhs;
+	*this = *this / rhs;
+	return *this;
 }
 int FNumber::get_value() const
 {
