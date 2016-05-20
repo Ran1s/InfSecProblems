@@ -33,6 +33,7 @@ public:
 	}
 	friend EPoint operator+(const EPoint& lhs, const EPoint& rhs)
 	{
+		using namespace std::rel_ops;
 		if (lhs == EPoint(0, 0))
 		{
 			return rhs;
@@ -52,7 +53,7 @@ public:
 		}
 		else
 		{
-			if (rhs.x == lhs.x)
+			if (rhs.x == lhs.x && rhs.y != lhs.y)
 			{
 				return EPoint(0, 0);
 			}
