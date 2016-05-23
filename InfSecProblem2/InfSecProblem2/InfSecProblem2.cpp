@@ -10,10 +10,8 @@ class FPolynom
 public:
 	static int number;
 	static int degree;
-	static FNumber what_change;
-	static std::vector<FNumber> to_change;
-	static bool calculated;
-	
+	static std::vector<FNumber> irreducible_polynom;
+	static bool calculated;	
 
 	FPolynom() : polynom() {}
 	
@@ -92,43 +90,39 @@ private:
 	static void calculate(std::vector<std::vector<FNumber>>& alpha)
 	{
 		bool gen_found = false;
-
-		//по-моему это абсолютно не правильно, то есть работает только для полей 2^x, вроде
-		//просто пробегаемся по всем возможным генераторам, проверяя его
-		for (int num = 0; num < number && !gen_found; num++)
+		for (int i = 1; i <= number && !gen_found; i++)
 		{
-			for (int numt = 0; numt < number && !gen_found; numt++)
-			{
-				std::vector<FNumber> gen = { num, numt };
-				if (check_generator(gen, alpha))
-				{
-					gen_found = true;
-					break;
-				}
-			}
+			std::vector<FNumber> gen = from_decimal(i, number);
+			gen_found = check_generator(gen, alpha);
 		}
+	}
+	static std::vector<FNumber> from_decimal(int n, const int& scale_notation)
+	{
+		std::vector<FNumber> ans;
+		while (n > 0)
+		{
+			ans.push_back(n % scale_notation);
+			n /= scale_notation;
+		}
+		return ans;
 	}
 	// если alpha^(number^degree) == 1, то это генератор, иначе нет
 	static bool check_generator(const std::vector<FNumber>& gen, std::vector<std::vector<FNumber>>& alpha)
 	{
 		int count_elements = std::pow(number, degree);
 		alpha.resize(count_elements);
-		//std::vector<FNumber> cur = gen;
 		alpha[0] = { 1 };
 		for (int deg = 1; deg < count_elements; deg++)
 		{
 			alpha[deg] = mult(alpha[deg - 1], gen);
 			simplify(alpha[deg]);
+			if (one(alpha[deg]) && deg != count_elements - 1)
+			{
+				alpha.clear();
+				return false;
+			}
 		}
-		if (one(alpha[count_elements - 1]))
-		{
-			return true;
-		}
-		else
-		{
-			alpha.clear();
-			return false;
-		}
+		return true;
 	}
 	static std::vector<FNumber> mult(const std::vector<FNumber>& lhs, const std::vector<FNumber>& rhs)
 	{
@@ -166,20 +160,40 @@ private:
 		delete_lead_zeros(ans);
 		return ans;
 	}
-	static void simplify(std::vector<FNumber>& polynom)
+	static std::vector<FNumber> subtr(const std::vector<FNumber>& lhs, const std::vector<FNumber>& rhs)
 	{
-		for (int i = polynom.size() - 1; i >= degree; i--)
+		std::vector<FNumber> ans(std::max(lhs.size(), rhs.size()));
+		for (size_t i = 0; i < ans.size(); i++)
 		{
-			if (!(polynom[i] == 0))
+			if (i < lhs.size() && i < rhs.size())
 			{
-				std::vector<FNumber> temp(i - degree + 1);
-				temp[i - degree] = polynom[i];
-				temp = mult(temp, to_change);
-				polynom = add(temp, polynom);
-				polynom[i] -= what_change;
+				ans[i] = lhs[i] - rhs[i];
+			}
+			else if (i < lhs.size())
+			{
+				ans[i] = lhs[i];
+			}
+			else
+			{
+				ans[i] = 0 - rhs[i];
 			}
 		}
-		delete_lead_zeros(polynom);
+		delete_lead_zeros(ans);
+		return ans;
+	}
+	static void simplify(std::vector<FNumber>& polynom)
+	{
+		while (polynom.size() >= irreducible_polynom.size())
+		{
+			FNumber divider = polynom[polynom.size() - 1] / irreducible_polynom[irreducible_polynom.size() - 1];
+			std::vector<FNumber> minus = irreducible_polynom;
+			for (size_t i = 0; i < minus.size(); i++)
+			{
+				minus[i] *= divider;
+			}
+			polynom = subtr(polynom, minus);
+			delete_lead_zeros(polynom);
+		}
 	}
 	static void delete_lead_zeros(std::vector<FNumber>& polynom)
 	{
@@ -195,33 +209,25 @@ private:
 	}
 	static bool one(const std::vector<FNumber>& pol)
 	{
-		if (pol.size() == 1)
-		{
-			if (pol[0] == 1)
-			{
-				return true;
-			}
-		}
-		return false;
+		return pol.size() == 1 && pol[0] == 1;
 	}
-	
+
 	std::vector<FNumber> polynom;
 };
 int FPolynom::degree = 1;
 int FPolynom::number = 1;
-FNumber FPolynom::what_change = 1;
-std::vector<FNumber> FPolynom::to_change = { 1 };
+std::vector<FNumber> FPolynom::irreducible_polynom = { 1 };
 bool FPolynom::calculated = false;
 
 int main()
 {
-	std::cout << "module, degree ";
+	std::cout << "module, degree: ";
 	std::cin >> FPolynom::number >> FPolynom::degree;
 	FNumber::module = FPolynom::number;
 
-	std::cout << "what change, to change ";
+	std::cout << "irreducible polynom: ";
 	std::string toch;
-	std::cin >> FPolynom::what_change >> toch;
+	std::cin >> toch;
 
 	//костыль для удобного ввода
 	std::vector<FNumber> tochv(toch.size());
@@ -229,18 +235,19 @@ int main()
 	{
 		tochv[i] = toch[i] - '0';
 	}
-	FPolynom::to_change = tochv;
+	//FPolynom::to_change = tochv;
+	FPolynom::irreducible_polynom = tochv;
 
 	FPolynom a, b, c, d;
-	std::cout << "first problem: first polynom, second polynom ";
+	std::cout << "first problem: first polynom, second polynom: ";
 	std::cin >> a >> b;
 	std::cout << "sum: " << a + b << std::endl;
 	std::cout << "mult: " << a * b << std::endl;
-	std::cout << "second problem: polynom, degree ";
+	std::cout << "second problem: polynom, degree: ";
 	int p;
 	std::cin >> c >> p;
 	std::cout << FPolynom::pow(c, p) << std::endl;
-	std::cout << "third problem: polynom ";
+	std::cout << "third problem: polynom: ";
 	std::cin >> d;
 	std::cout << "inverse polynom: " << FPolynom::inverse(d) << std::endl;
     return 0;
