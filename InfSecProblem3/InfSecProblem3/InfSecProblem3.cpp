@@ -1,151 +1,37 @@
 #include <iostream>
 #include "fgroup.h"
+#include "ecurve.h"
 
-class EPoint
-{
-public:
-	static int a;
-	static int b;
-
-	FNumber x;
-	FNumber y;
-
-	EPoint() : x(0), y(0) {}
-	EPoint(FNumber x, FNumber y)
-	{
-		this->x = x;
-		this->y = y;
-	}
-	EPoint(const EPoint& p)
-	{
-		this->x = p.x;
-		this->y = p.y;
-	}
-	EPoint& operator=(const EPoint& p)
-	{
-		x = p.x;
-		y = p.y;
-		return *this;
-	}
-	friend bool operator==(const EPoint& lhs, const EPoint& rhs)
-	{
-		return lhs.x == rhs.x && lhs.y == rhs.y;
-	}
-	friend EPoint operator+(const EPoint& lhs, const EPoint& rhs)
-	{
-		using namespace std::rel_ops;
-		if (lhs == EPoint(0, 0))
-		{
-			return rhs;
-		}
-		if (rhs == EPoint(0, 0))
-		{
-			return lhs;
-		}
-		FNumber lambda;
-		if (lhs == rhs)
-		{
-			if (2 * lhs.y == 0)
-			{
-				return EPoint(0, 0);
-			}
-			lambda = (3 * FNumber::pow(lhs.x, 2) + a) / (2 * lhs.y);
-		}
-		else
-		{
-			if (rhs.x == lhs.x && rhs.y != lhs.y)
-			{
-				return EPoint(0, 0);
-			}
-			lambda = (rhs.y - lhs.y) / (rhs.x - lhs.x);
-		}
-		FNumber x = FNumber::pow(lambda, 2) - lhs.x - rhs.x;
-		FNumber y = lambda * (lhs.x - x) - lhs.y;
-		return EPoint(x, y);
-	}
-	static EPoint inverse(const EPoint& p)
-	{
-		return EPoint(p.x, p.y * -1);
-	}
-	friend EPoint operator-(const EPoint& lhs, const EPoint& rhs)
-	{
-		return lhs + inverse(rhs);
-	}
-	EPoint& operator+=(const EPoint& rhs)
-	{
-		*this = *this + rhs;
-		return *this;
-	}
-	EPoint& operator-=(const EPoint& rhs)
-	{
-		*this = *this + inverse(rhs);
-		return *this;
-	}
-	friend EPoint operator*(int k, EPoint p)
-	{
-		if (k < 1)
-			throw std::invalid_argument("k can't be negative");
-		EPoint ans(0, 0);
-		while (k > 0)
-		{
-			if (k % 2 == 0)
-			{
-				k /= 2;
-				p += p;
-			}
-			else
-			{
-				ans += p;
-				k--;
-			}
-		}
-		return ans;
-	}
-	friend const EPoint operator*(EPoint p, int k)
-	{
-		return k * p;
-	}
-	friend std::ostream& operator<<(std::ostream& out, const EPoint& p)
-	{
-		out << "(" << p.x << ", " << p.y << ")";
-		return out;
-	}
-	friend std::istream& operator>>(std::istream& in, EPoint& p)
-	{
-		in >> p.x >> p.y;
-		return in;
-	}
-};
-int EPoint::a = 1;
-int EPoint::b = 1;
 int main()
 {
-	/*EPoint::a = 15;
-	EPoint::b = 1;
-	FNumber::module = 31;*/
-	int n, k;
-	EPoint p, q;
-	std::cout << "p = ";
-	std::cin >> FNumber::module;
-	std::cout << "a = ";
-	std::cin >> EPoint::a;
-	std::cout << "b = ";
-	std::cin >> EPoint::b;
-	std::cout << "n = ";
-	std::cin >> n;
-	std::cout << "k = ";
-	std::cin >> k;
-	std::cout << "P = ";
-	std::cin >> p;
-	std::cout << "Q = ";
-	std::cin >> q;
+	EPoint::a = 0;
+	EPoint::b = 3;
+	FNumber::module = 7;
+	EPoint a(3, 3);
+	std::cout << 2 * a << std::endl;
+	//int n, k;
+	//EPoint p, q;
+	//std::cout << "p = ";
+	//std::cin >> FNumber::module;
+	//std::cout << "a = ";
+	//std::cin >> EPoint::a;
+	//std::cout << "b = ";
+	//std::cin >> EPoint::b;
+	//std::cout << "n = ";
+	//std::cin >> n;
+	//std::cout << "k = ";
+	//std::cin >> k;
+	//std::cout << "P = ";
+	//std::cin >> p;
+	//std::cout << "Q = ";
+	//std::cin >> q;
 
-	std::cout << std::endl;
-	EPoint np = n * p;
-	std::cout << "nP = " << np << std::endl;
-	EPoint kq = k * q;
-	std::cout << "kQ = " << kq << std::endl;
-	std::cout << "nP + kQ = " << n * p + k * q << std::endl;
+	//std::cout << std::endl;
+	//EPoint np = n * p;
+	//std::cout << "nP = " << np << std::endl;
+	//EPoint kq = k * q;
+	//std::cout << "kQ = " << kq << std::endl;
+	//std::cout << "nP + kQ = " << n * p + k * q << std::endl;
 	/*std::cout << 21 * EPoint(0, 30) << std::endl;*/
 
 
